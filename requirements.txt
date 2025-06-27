@@ -1,0 +1,6 @@
+vosk
+pyttsx3
+pyaudio
+openai
+SpeechRecognition
+wikipedia
