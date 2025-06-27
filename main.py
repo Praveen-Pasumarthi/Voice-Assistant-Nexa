@@ -9,6 +9,7 @@ import pyaudio
 import pyttsx3
 import speech_recognition as sr
 from dotenv import load_dotenv
+import numpy as np
 
 # 🔐 Load environment variables
 load_dotenv()
@@ -157,7 +158,7 @@ def wait_for_wake_word():
     porcupine = pvporcupine.create(
         keyword_paths=["wake_words/Hey-Barry_en_windows_v3_0_0.ppn"],
         access_key=ACCESS_KEY,
-        sensitivities=[0.4]
+        sensitivities=[0.3]  # 🔧 Reduced sensitivity to prevent false triggers
     )
 
     audio = pyaudio.PyAudio()
@@ -173,6 +174,10 @@ def wait_for_wake_word():
         while True:
             pcm = stream.read(porcupine.frame_length, exception_on_overflow=False)
             pcm = struct.unpack_from("h" * porcupine.frame_length, pcm)
+            pcm_np = np.array(pcm, dtype=np.int16)
+
+            # Optional: print energy to debug noise
+            # print("Mic energy:", np.linalg.norm(pcm_np))
 
             if porcupine.process(pcm):
                 print("🔊 Wake word detected!")
@@ -185,6 +190,7 @@ def wait_for_wake_word():
 
 # 🚀 Main loop
 def main():
+    print("🤖 Barry: Barry is online and ready. Say Hey Barry to wake me up.")
     while True:
         wait_for_wake_word()
         while True:
